@@ -79,6 +79,29 @@ function updateSnakeCoordinates() {
   }
 }
 
+new p5.SoundFile(music/Title Theme - Mario Kart Wiii.mp3, [successCallback], [errorCallback], [whileLoadingCallback])
+
+function preload() {
+  soundFormats('mp3', 'ogg');
+  mySound = loadSound('music/Title Theme - Mario Kart Wii.mp3');
+}
+
+function setup() {
+  mySound.setVolume(0.1);
+  mySound.play();
+}
+
+function startMusic() {
+  seq.start();
+}
+
+function stopMusic() {
+  seq.stop();
+
+loop([0], [1], [100], [1000], [1000])
+
+
+
 /*
  I always check the snake's head position xCor[xCor.length - 1] and
  yCor[yCor.length - 1] to see if it touches the game's boundaries
