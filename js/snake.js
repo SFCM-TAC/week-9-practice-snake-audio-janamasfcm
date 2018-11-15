@@ -14,6 +14,41 @@ var xFruit = 0;
 var yFruit = 0;
 var scoreElem;
 
+var player = new Tone.Synth(
+{
+  envelope: {
+    attack : 0.3 ,
+    decay : 0.2 ,
+    sustain :0.3 ,
+    release : 0.6 ,
+  }}
+).toMaster();
+
+var embiant = new Tone.Synth({
+	oscillator : {
+  	type : 'fmsquare',
+    modulationType : 'sawtooth',
+    modulationIndex : 3,
+    harmonicity: 3.4
+  },
+  envelope : {
+  	attack : 0.3,
+    decay : 0.2,
+    sustain: 0.4,
+    release: 0.5
+  }
+}).toMaster()
+
+
+var pitch = ["D4","E4","F2"];
+function osc (){
+
+  var pickNote = Math.floor(Math.random() * 3);
+  var randomNote = pitch [pickNote];
+  embiant.triggerAttackRelease(randomNote, '8n');
+}
+var loop = setInterval(osc, 100);
+
 function setup() {
   scoreElem = createDiv('Score = 0');
   scoreElem.position(20, 20);
@@ -79,29 +114,6 @@ function updateSnakeCoordinates() {
   }
 }
 
-new p5.SoundFile(music/Title Theme - Mario Kart Wiii.mp3, [successCallback], [errorCallback], [whileLoadingCallback])
-
-function preload() {
-  soundFormats('mp3', 'ogg');
-  mySound = loadSound('music/Title Theme - Mario Kart Wii.mp3');
-}
-
-function setup() {
-  mySound.setVolume(0.1);
-  mySound.play();
-}
-
-function startMusic() {
-  seq.start();
-}
-
-function stopMusic() {
-  seq.stop();
-
-loop([0], [1], [100], [1000], [1000])
-
-
-
 /*
  I always check the snake's head position xCor[xCor.length - 1] and
  yCor[yCor.length - 1] to see if it touches the game's boundaries
@@ -116,6 +128,9 @@ function checkGameStatus() {
     noLoop();
     var scoreVal = parseInt(scoreElem.html().substring(8));
     scoreElem.html('Game ended! Your score was : ' + scoreVal);
+    //lose
+    clearInterval(loop);
+    player.triggerTa
   }
 }
 
@@ -147,6 +162,7 @@ function checkForFruit() {
     yCor.unshift(yCor[0]);
     numSegments++;
     updateFruitCoordinates();
+    player.triggerAttackRelease('C#7', '8n');
   }
 }
 
