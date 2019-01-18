@@ -14,41 +14,6 @@ var xFruit = 0;
 var yFruit = 0;
 var scoreElem;
 
-var player = new Tone.Synth(
-{
-  envelope: {
-    attack : 0.3 ,
-    decay : 0.2 ,
-    sustain :0.3 ,
-    release : 0.6 ,
-  }}
-).toMaster();
-
-var embiant = new Tone.Synth({
-	oscillator : {
-  	type : 'fmsquare',
-    modulationType : 'sawtooth',
-    modulationIndex : 3,
-    harmonicity: 3.4
-  },
-  envelope : {
-  	attack : 0.3,
-    decay : 0.2,
-    sustain: 0.4,
-    release: 0.5
-  }
-}).toMaster()
-
-
-var pitch = ["D4","E4","F2"];
-function osc (){
-
-  var pickNote = Math.floor(Math.random() * 3);
-  var randomNote = pitch [pickNote];
-  embiant.triggerAttackRelease(randomNote, '8n');
-}
-var loop = setInterval(osc, 100);
-
 function setup() {
   scoreElem = createDiv('Score = 0');
   scoreElem.position(20, 20);
@@ -67,11 +32,22 @@ function setup() {
   }
 }
 
+
+var randomColors =
+  ['#FF4500','#F08080','#B22222','#FF6347','#F08080']
+
+var randomColor = randomColors[Math.floor((Math.random() * 5))]
+
+function randomcolor() {
+  randomColor = randomColors[Math.floor((Math.random() * 5))]
+}
+
 function draw() {
-  background(0);
+  background(randomColor);
   for (var i = 0; i < numSegments - 1; i++) {
     line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
   }
+
   updateSnakeCoordinates();
   checkGameStatus();
   checkForFruit();
@@ -125,14 +101,11 @@ function checkGameStatus() {
       yCor[yCor.length - 1] > height ||
       yCor[yCor.length - 1] < 0 ||
       checkSnakeCollision()) {
+    gameOverSound();
+    stopMusic();
     noLoop();
     var scoreVal = parseInt(scoreElem.html().substring(8));
     scoreElem.html('Game ended! Your score was : ' + scoreVal);
-    //lose
-    clearInterval(loop);
-    player.triggerTa
-  }
-}
 
 /*
  If the snake hits itself, that means the snake head's (x,y) coordinate
@@ -163,6 +136,9 @@ function checkForFruit() {
     numSegments++;
     updateFruitCoordinates();
     player.triggerAttackRelease('C#7', '8n');
+    updateFruitCoordinates();
+    eatSound();
+    changeColor();
   }
 }
 
@@ -201,3 +177,44 @@ function keyPressed() {
       break;
   }
 }
+
+
+
+
+var pitch = ["D4","E4","F2"];
+function osc (){
+
+  var pickNote = Math.floor(Math.random() * 3);
+  var randomNote = pitch [pickNote];
+  embiant.triggerAttackRelease(randomNote, '8n');
+}
+var loop = setInterval(osc, 100);
+
+
+
+
+var player = new Tone.Synth(
+{
+  envelope: {
+    attack : 0.3 ,
+    decay : 0.2 ,
+    sustain :0.3 ,
+    release : 0.6 ,
+  }}
+).toMaster();
+
+
+  var embiant = new Tone.Synth({
+	  oscillator : {
+  	type : 'fmsquare',
+    modulationType : 'sawtooth',
+    modulationIndex : 3,
+    harmonicity: 3.4
+  },
+  envelope : {
+  	attack : 0.3,
+    decay : 0.2,
+    sustain: 0.4,
+    release: 0.5
+  }
+}).toMaster()
