@@ -1,5 +1,4 @@
 
-// the snake is divided into small segments, which are drawn and edited on each 'draw' call
 var numSegments = 10;
 var direction = 'right';
 
@@ -22,7 +21,7 @@ function setup() {
 
   createCanvas(500, 500);
   frameRate(15);
-  stroke(255);
+  stroke(400);
   strokeWeight(10);
   updateFruitCoordinates();
 
@@ -34,11 +33,11 @@ function setup() {
 
 
 var randomColors =
-  ['#FF4500','#F08080','#B22222','#FF6347','#F08080']
+['#FF4500','#F08080','#B22222','#FF6347','#F08080']
 
 var randomColor = randomColors[Math.floor((Math.random() * 5))]
 
-function randomcolor() {
+function changeColor() {
   randomColor = randomColors[Math.floor((Math.random() * 5))]
 }
 
@@ -101,11 +100,14 @@ function checkGameStatus() {
       yCor[yCor.length - 1] > height ||
       yCor[yCor.length - 1] < 0 ||
       checkSnakeCollision()) {
-    gameOverSound();
-    stopMusic();
-    noLoop();
-    var scoreVal = parseInt(scoreElem.html().substring(8));
-    scoreElem.html('Game ended! Your score was : ' + scoreVal);
+        noLoop();
+        var scoreVal = parseInt(scoreElem.html().substring(8));
+        scoreElem.html('Game ended! Your score was : ' + scoreVal);
+        //lose
+        stopMusic()
+        player.triggerAttackRelease('D1', '1n');
+  }
+}
 
 /*
  If the snake hits itself, that means the snake head's (x,y) coordinate
@@ -135,10 +137,9 @@ function checkForFruit() {
     yCor.unshift(yCor[0]);
     numSegments++;
     updateFruitCoordinates();
-    player.triggerAttackRelease('C#7', '8n');
-    updateFruitCoordinates();
-    eatSound();
     changeColor();
+    startMusic()
+    player.triggerAttackRelease('C#7', '6n');
   }
 }
 
@@ -178,43 +179,26 @@ function keyPressed() {
   }
 }
 
-
-
-
-var pitch = ["D4","E4","F2"];
-function osc (){
-
-  var pickNote = Math.floor(Math.random() * 3);
-  var randomNote = pitch [pickNote];
-  embiant.triggerAttackRelease(randomNote, '8n');
-}
-var loop = setInterval(osc, 100);
-
-
-
-
 var player = new Tone.Synth(
 {
   envelope: {
-    attack : 0.3 ,
-    decay : 0.2 ,
-    sustain :0.3 ,
-    release : 0.6 ,
+    attack : 0.2 ,
+    decay : 0.1 ,
+    sustain :0.1 ,
+    release : 0.1 ,
   }}
 ).toMaster();
 
+Tone.Transport.start()
+const synth = new Tone.DuoSynth().toMaster()
+const seq = new Tone.Sequence((time, note) => {
+  synth.triggerAttackRelease(note, '8n', time)
+}, ['E3', 'D3', 'C3', 'D3', 'E3' ,'E3' ,'E3' , 'D3' ,'D3' ,'D3', 'E3' ,'G3' ,'G3' ], '4n')
 
-  var embiant = new Tone.Synth({
-	  oscillator : {
-  	type : 'fmsquare',
-    modulationType : 'sawtooth',
-    modulationIndex : 3,
-    harmonicity: 3.4
-  },
-  envelope : {
-  	attack : 0.3,
-    decay : 0.2,
-    sustain: 0.4,
-    release: 0.5
-  }
-}).toMaster()
+function startMusic() {
+  seq.start();
+}
+
+function stopMusic() {
+  seq.stop();
+}
